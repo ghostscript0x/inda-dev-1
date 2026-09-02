@@ -59,9 +59,7 @@ export async function generateMetadata(): Promise<Metadata> {
       locale: 'en_US',
       images: [
         {
-          url: SOCIAL_IMAGE,
-          width: 1200,
-          height: 630,
+          url: '/avatar.png',
           alt: `${name} — ${tagline}`,
         },
       ],
@@ -70,7 +68,7 @@ export async function generateMetadata(): Promise<Metadata> {
       card: 'summary_large_image',
       title,
       description,
-      images: [SOCIAL_IMAGE],
+      images: ['/avatar.png'],
     },
     robots: { index: true, follow: true },
   }
