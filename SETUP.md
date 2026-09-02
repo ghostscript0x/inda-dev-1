@@ -41,7 +41,7 @@ npm run dev
 Go to `http://localhost:3000/admin`
 
 Default credentials:
-- Email: `admin@inda.dev`
+- Email: `admin@inda.name.ng`
 - Password: `admin123`
 
 **Change this password immediately in production!**

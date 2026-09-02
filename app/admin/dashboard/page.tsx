@@ -173,7 +173,7 @@ export default function DashboardPage() {
         <div className="flex items-center gap-3 px-6 h-20 border-b" style={{ borderColor: 'var(--line)' }}>
           <span className="w-9 h-9 grid place-items-center text-sm font-black" style={{ background: 'var(--green)', color: 'var(--background)', borderRadius: 8 }}>A</span>
           <div>
-            <p className="text-sm font-bold leading-none">inda.dev</p>
+            <p className="text-sm font-bold leading-none">inda.name.ng</p>
             <p className="text-[11px] mt-1" style={{ color: 'var(--muted)' }}>Content Studio</p>
           </div>
           <button className="ml-auto lg:hidden" onClick={() => setSidebarOpen(false)} style={{ color: 'var(--muted)' }}><X size={18} /></button>

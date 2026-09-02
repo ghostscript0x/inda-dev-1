@@ -3,8 +3,9 @@ import type { Metadata, Viewport } from 'next'
 import { prisma } from '@/lib/prisma'
 import './globals.css'
 
-export const SITE_URL = 'https://inda.dev'
+export const SITE_URL = 'https://www.inda.name.ng'
 const LOGO_FALLBACK = '/logo.png'
+const SOCIAL_IMAGE = '/avatar.png'
 
 export const viewport: Viewport = {
   colorScheme: 'light dark',
@@ -39,25 +40,37 @@ export async function generateMetadata(): Promise<Metadata> {
     metadataBase: new URL(SITE_URL),
     title,
     description,
-    generator: 'inda.dev',
+    generator: 'inda.name.ng',
     authors: [{ name, url: SITE_URL }],
     creator: name,
+    alternates: {
+      canonical: SITE_URL,
+    },
     icons: {
       icon: [{ url: logo, type: 'image/png' }],
-      apple: '/logo.png',
+      apple: '/avatar.png',
     },
     openGraph: {
       title,
       description,
       type: 'website',
       url: SITE_URL,
-      siteName: 'inda.dev',
+      siteName: 'inda.name.ng',
       locale: 'en_US',
+      images: [
+        {
+          url: SOCIAL_IMAGE,
+          width: 1200,
+          height: 630,
+          alt: `${name} — ${tagline}`,
+        },
+      ],
     },
     twitter: {
       card: 'summary_large_image',
       title,
       description,
+      images: [SOCIAL_IMAGE],
     },
     robots: { index: true, follow: true },
   }

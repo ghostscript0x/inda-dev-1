@@ -5,7 +5,7 @@ import { join } from 'node:path'
 import { prisma } from '@/lib/prisma'
 
 export const runtime = 'nodejs'
-export const alt = 'inda.dev — Design, Build, Launch'
+export const alt = 'inda.name.ng — Design, Build, Launch'
 export const size = { width: 1200, height: 630 }
 export const contentType = 'image/png'
 
@@ -66,7 +66,7 @@ export default async function Image({ _req }: { _req: NextRequest }) {
           }}
         >
           <img src={logo} width={34} height={34} style={{ objectFit: 'contain' }} />
-          <span style={{ fontSize: 22, fontWeight: 700, letterSpacing: 2 }}>inda.dev</span>
+          <span style={{ fontSize: 22, fontWeight: 700, letterSpacing: 2 }}>inda.name.ng</span>
         </div>
 
         <div style={{ display: 'flex', flexDirection: 'column', maxWidth: 640 }}>
