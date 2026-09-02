@@ -4,7 +4,7 @@ import { join } from 'node:path'
 
 export const runtime = 'nodejs'
 export const alt = 'Abdul-Quddus Inda avatar'
-export const size = { width: 1200, height: 1200 }
+export const size = { width: 1254, height: 1254 }
 export const contentType = 'image/png'
 
 export default function Image() {

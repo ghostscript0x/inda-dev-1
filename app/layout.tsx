@@ -60,6 +60,8 @@ export async function generateMetadata(): Promise<Metadata> {
       images: [
         {
           url: '/avatar.png',
+          width: 1254,
+          height: 1254,
           alt: `${name} — ${tagline}`,
         },
       ],
@@ -68,7 +70,7 @@ export async function generateMetadata(): Promise<Metadata> {
       card: 'summary_large_image',
       title,
       description,
-      images: ['/avatar.png'],
+      images: [{ url: '/avatar.png', width: 1254, height: 1254 }],
     },
     robots: { index: true, follow: true },
   }
