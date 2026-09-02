@@ -1,0 +1,67 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Admin {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  name      String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Profile {
+  id            String   @id @default(cuid())
+  name          String
+  tagline       String
+  kicker        String
+  intro         String
+  bio           String[]
+  stack         String
+  manifesto     String
+  contactHeadline String
+  contactIntro  String
+  profileImage  String?
+  logoImage     String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model Service {
+  id        String   @id @default(cuid())
+  number    String
+  title     String
+  text      String
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Experience {
+  id        String   @id @default(cuid())
+  period    String
+  title     String
+  text      String
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Work {
+  id        String   @id @default(cuid())
+  type      String
+  title     String
+  text      String
+  tags      String[]
+  accent    String
+  image     String?
+  link      String?
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
