@@ -40,7 +40,7 @@ export async function generateMetadata(): Promise<Metadata> {
     metadataBase: new URL(SITE_URL),
     title,
     description,
-    generator: 'inda.name.ng',
+    generator: 'inda.dev',
     authors: [{ name, url: SITE_URL }],
     creator: name,
     alternates: {
@@ -55,7 +55,7 @@ export async function generateMetadata(): Promise<Metadata> {
       description,
       type: 'website',
       url: SITE_URL,
-      siteName: 'inda.name.ng',
+      siteName: 'inda.dev',
       locale: 'en_US',
       images: [
         {
