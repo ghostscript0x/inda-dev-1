@@ -22,7 +22,7 @@ Without Cloudinary, Resend, Turnstile or Upstash keys the app still runs locally
 ## Deploy (Vercel)
 
 1. Import the repo in Vercel, add every variable from `.env.example`.
-2. Vercel runs `npm run vercel-build` automatically: it applies database migrations, seeds the starting content (only missing rows, never overwrites your edits; creates the admin from `ADMIN_EMAIL`/`ADMIN_PASSWORD` if set), then builds. With a pooled `DATABASE_URL` (Neon/Supabase), also set `DIRECT_URL` to the direct connection for migrations.
+2. Vercel runs `npm run vercel-build` automatically: it applies database migrations, adds the starting content on a brand-new database only (once the site is set up, deploys never add, change or delete content; it only creates the `ADMIN_EMAIL`/`ADMIN_PASSWORD` admin if that account doesn't exist), then builds. With a pooled `DATABASE_URL` (Neon/Supabase), also set `DIRECT_URL` to the direct connection for migrations.
 3. Paystack dashboard → Settings → API Keys & Webhooks → webhook URL `https://inda.name.ng/api/webhooks/paystack`.
 4. Cloudflare in front for DNS (proxied). Crons in `vercel.json` run daily (Hobby-plan safe).
 5. Add the site to Google Search Console and Bing Webmaster Tools; submit `/sitemap.xml`.

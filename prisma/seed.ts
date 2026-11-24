@@ -1,6 +1,6 @@
 /**
- * Seeds the starting content. Safe to re-run: it only creates rows that don't exist yet
- * and never overwrites anything you've edited in the admin.
+ * Seeds the starting content on a brand-new database only. Runs on every deploy, but once the
+ * site is set up it changes nothing (except creating the ADMIN_EMAIL account if it doesn't exist).
  *
  * Everything marked [Sample] is placeholder content for you to replace. It is created as a
  * draft/hidden, so nothing made-up appears on the live site.
@@ -11,7 +11,9 @@ import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "../src/generated/prisma/client";
 import { sectionDefs, type SectionType } from "../src/lib/content";
 
-const db = new PrismaClient({ adapter: new PrismaPg({ connectionString: process.env.DATABASE_URL! }) });
+const db = new PrismaClient({
+  adapter: new PrismaPg({ connectionString: process.env.DATABASE_URL! }),
+});
 
 const home: { type: SectionType; visible?: boolean; data: unknown }[] = [
   {
@@ -21,34 +23,96 @@ const home: { type: SectionType; visible?: boolean; data: unknown }[] = [
       role: "Software engineer",
       location: "Nigeria · WAT (UTC+1)",
       headline: "I build secure, automated systems for businesses.",
-      subline: "Web and backend development, AI automation, and network & security engineering.",
+      subline:
+        "Web and backend development, AI automation, and network & security engineering.",
       primary: { label: "View work", href: "/#work" },
       secondary: { label: "Browse products", href: "/products" },
     },
   },
-  { type: "work", data: { eyebrow: "Selected work", title: "Systems that run real businesses.", intro: "Each case study covers the problem, the architecture, the code that mattered and the result." } },
+  {
+    type: "work",
+    data: {
+      eyebrow: "Selected work",
+      title: "Systems that run real businesses.",
+      intro:
+        "Each case study covers the problem, the architecture, the code that mattered and the result.",
+    },
+  },
   {
     type: "pillars",
     data: {
       eyebrow: "What I do",
       title: "Build. Secure. Automate.",
       items: [
-        { key: "build", title: "Build", sentence: "Web apps, backends and APIs that are fast, typed end to end and easy to change.", capabilities: ["Web applications", "Backend services & APIs", "Database design", "Payments & integrations"], tools: ["Next.js", "TypeScript", "Node.js", "Postgres", "Prisma"] },
-        { key: "secure", title: "Secure", sentence: "Networks and servers set up properly, hardened, monitored and documented.", capabilities: ["Network & server setup", "Linux hardening", "Security headers & audits", "Home lab & monitoring"], tools: ["Linux", "Docker", "Cloudflare", "WireGuard", "Caddy"] },
-        { key: "automate", title: "Automate", sentence: "Workflows and AI agents that take repetitive work off your team’s plate.", capabilities: ["Workflow automation", "AI agents", "Business process automation", "Home automation"], tools: ["n8n", "LLM APIs", "Webhooks", "Home Assistant"] },
+        {
+          key: "build",
+          title: "Build",
+          sentence:
+            "Web apps, backends and APIs that are fast, typed end to end and easy to change.",
+          capabilities: [
+            "Web applications",
+            "Backend services & APIs",
+            "Database design",
+            "Payments & integrations",
+          ],
+          tools: ["Next.js", "TypeScript", "Node.js", "Postgres", "Prisma"],
+        },
+        {
+          key: "secure",
+          title: "Secure",
+          sentence:
+            "Networks and servers set up properly, hardened, monitored and documented.",
+          capabilities: [
+            "Network & server setup",
+            "Linux hardening",
+            "Security headers & audits",
+            "Home lab & monitoring",
+          ],
+          tools: ["Linux", "Docker", "Cloudflare", "WireGuard", "Caddy"],
+        },
+        {
+          key: "automate",
+          title: "Automate",
+          sentence:
+            "Workflows and AI agents that take repetitive work off your team’s plate.",
+          capabilities: [
+            "Workflow automation",
+            "AI agents",
+            "Business process automation",
+            "Home automation",
+          ],
+          tools: ["n8n", "LLM APIs", "Webhooks", "Home Assistant"],
+        },
       ],
     },
   },
-  { type: "products", data: { eyebrow: "Products", title: "Templates, workflows and starters.", intro: "Built from real projects. Pay once, download instantly." } },
-  { type: "proof", data: { eyebrow: "Proof", title: "What clients say.", stats: [] } },
-  { type: "contact", data: { title: "Have a system to build, secure or automate?", text: "Tell me what you’re working on. I reply within one working day." } },
+  {
+    type: "products",
+    data: {
+      eyebrow: "Products",
+      title: "Templates, workflows and starters.",
+      intro: "Built from real projects. Pay once, download instantly.",
+    },
+  },
+  {
+    type: "proof",
+    data: { eyebrow: "Proof", title: "What clients say.", stats: [] },
+  },
+  {
+    type: "contact",
+    data: {
+      title: "Have a system to build, secure or automate?",
+      text: "Tell me what you’re working on. I reply within one working day.",
+    },
+  },
 ];
 
 const about: { type: SectionType; visible?: boolean; data: unknown }[] = [
   {
     type: "story",
     data: {
-      title: "I build software that’s secure by default and automated where it counts.",
+      title:
+        "I build software that’s secure by default and automated where it counts.",
       paragraphs: [
         "I’m Abdul-Quddus Sanusy Onuja Inda (most people just call me Inda), a software engineer based in Nigeria. I build web applications and backends, automate the repetitive parts of running a business, and set up networks and servers that stay up.",
         "[Sample] Replace these paragraphs with your own story in the admin: where you started, what you work on now, and what kind of projects you want more of.",
@@ -56,21 +120,82 @@ const about: { type: SectionType; visible?: boolean; data: unknown }[] = [
       photoId: null,
     },
   },
-  { type: "timeline", visible: false, data: { title: "Timeline", items: [{ year: "Now", title: "[Sample] Building inda.dev", text: "Replace with your real milestones, then make this section visible." }] } },
+  {
+    type: "timeline",
+    visible: false,
+    data: {
+      title: "Timeline",
+      items: [
+        {
+          year: "Now",
+          title: "[Sample] Building inda.dev",
+          text: "Replace with your real milestones, then make this section visible.",
+        },
+      ],
+    },
+  },
   {
     type: "skills",
     data: {
       title: "Skills",
       groups: [
-        { key: "build", title: "Build", skills: ["TypeScript", "Next.js", "React", "Node.js", "Postgres", "Prisma", "REST APIs"] },
-        { key: "secure", title: "Secure", skills: ["Linux", "Networking", "Docker", "Cloudflare", "Security headers"] },
-        { key: "automate", title: "Automate", skills: ["n8n", "AI agents", "Webhooks", "Workflow design"] },
+        {
+          key: "build",
+          title: "Build",
+          skills: [
+            "TypeScript",
+            "Next.js",
+            "React",
+            "Node.js",
+            "Postgres",
+            "Prisma",
+            "REST APIs",
+          ],
+        },
+        {
+          key: "secure",
+          title: "Secure",
+          skills: [
+            "Linux",
+            "Networking",
+            "Docker",
+            "Cloudflare",
+            "Security headers",
+          ],
+        },
+        {
+          key: "automate",
+          title: "Automate",
+          skills: ["n8n", "AI agents", "Webhooks", "Workflow design"],
+        },
       ],
     },
   },
-  { type: "certifications", data: { title: "Certifications & learning", intro: "I’m newer to cybersecurity than to software, so here’s exactly where I am: what I’ve earned and what I’m working through." } },
-  { type: "homelab", visible: false, data: { title: "Home lab", text: "[Sample] Describe your home lab and network setup here, then make this section visible.", items: ["[Sample] Router / firewall", "[Sample] Hypervisor", "[Sample] Monitoring"] } },
-  { type: "cv", data: { title: "CV", text: "The one-page version, as a PDF." } },
+  {
+    type: "certifications",
+    data: {
+      title: "Certifications & learning",
+      intro:
+        "I’m newer to cybersecurity than to software, so here’s exactly where I am: what I’ve earned and what I’m working through.",
+    },
+  },
+  {
+    type: "homelab",
+    visible: false,
+    data: {
+      title: "Home lab",
+      text: "[Sample] Describe your home lab and network setup here, then make this section visible.",
+      items: [
+        "[Sample] Router / firewall",
+        "[Sample] Hypervisor",
+        "[Sample] Monitoring",
+      ],
+    },
+  },
+  {
+    type: "cv",
+    data: { title: "CV", text: "The one-page version, as a PDF." },
+  },
 ];
 
 const LEGAL = {
@@ -147,7 +272,8 @@ Open-source parts keep their own licenses (for example MIT), included in the fil
   },
 };
 
-async function main() {
+/** Starting content for a brand-new database. Never runs again once the site has been set up. */
+async function seedContent() {
   await db.siteSettings.upsert({
     where: { id: 1 },
     update: {},
@@ -163,7 +289,11 @@ async function main() {
       availabilityText: "Available for new projects",
       socials: [
         { network: "github", label: "GitHub", href: "https://github.com/" },
-        { network: "linkedin", label: "LinkedIn", href: "https://www.linkedin.com/" },
+        {
+          network: "linkedin",
+          label: "LinkedIn",
+          href: "https://www.linkedin.com/",
+        },
         { network: "x", label: "X", href: "https://x.com/" },
         { network: "tiktok", label: "TikTok", href: "https://www.tiktok.com/" },
         { network: "email", label: "Email", href: "mailto:hello@inda.name.ng" },
@@ -180,12 +310,24 @@ async function main() {
     if (existing) continue;
     for (const [order, s] of list.entries()) {
       const data = sectionDefs[s.type].schema.parse(s.data); // seed data must pass the same validation as the admin
-      await db.section.create({ data: { page, type: s.type, order, visible: s.visible ?? true, data: data as object } });
+      await db.section.create({
+        data: {
+          page,
+          type: s.type,
+          order,
+          visible: s.visible ?? true,
+          data: data as object,
+        },
+      });
     }
   }
 
   for (const [slug, doc] of Object.entries(LEGAL)) {
-    await db.legalDoc.upsert({ where: { slug }, update: {}, create: { slug, ...doc } });
+    await db.legalDoc.upsert({
+      where: { slug },
+      update: {},
+      create: { slug, ...doc },
+    });
   }
 
   if ((await db.project.count()) === 0) {
@@ -195,12 +337,15 @@ async function main() {
         title: "[Sample] Invoice processing automation",
         pillar: "automate",
         industry: "Logistics",
-        summary: "Replace with a real project: who it was for and what they needed.",
-        result: "Replace with the real result, e.g. “Cut invoice processing from 3 hours to 10 minutes.”",
+        summary:
+          "Replace with a real project: who it was for and what they needed.",
+        result:
+          "Replace with the real result, e.g. “Cut invoice processing from 3 hours to 10 minutes.”",
         content: {
           problem: "Describe the problem in plain words.",
           approach: "How you approached it, and why.",
-          architecture: "Email inbox ──▶ n8n webhook ──▶ AI extraction ──▶ Postgres\n                                   │\n                                   └──▶ Slack approval ──▶ Accounting API",
+          architecture:
+            "Email inbox ──▶ n8n webhook ──▶ AI extraction ──▶ Postgres\n                                   │\n                                   └──▶ Slack approval ──▶ Accounting API",
           code: "// The key snippet that made it work",
           codeLang: "ts",
           results: "Real numbers only.",
@@ -219,8 +364,10 @@ async function main() {
       data: {
         slug: "sample-n8n-starter-pack",
         title: "[Sample] n8n Starter Pack",
-        summary: "Replace with a real product. Drafts never appear in the store.",
-        description: "Describe what the product does and the problem it solves.",
+        summary:
+          "Replace with a real product. Drafts never appear in the store.",
+        description:
+          "Describe what the product does and the problem it solves.",
         whatsInside: ["10 workflow JSON files", "Setup guide (PDF)"],
         audience: "Who it’s for.",
         faqs: [{ q: "Do I need a paid n8n plan?", a: "Answer honestly." }],
@@ -231,20 +378,47 @@ async function main() {
       },
     });
   }
+}
 
+async function seedAdmin() {
   // Admin account from ADMIN_EMAIL / ADMIN_PASSWORD in .env. Created once; an existing account is never touched.
   const adminEmail = process.env.ADMIN_EMAIL?.trim().toLowerCase();
   const adminPassword = process.env.ADMIN_PASSWORD;
   if (adminEmail && adminPassword) {
-    if (adminPassword.length < 12) throw new Error("ADMIN_PASSWORD must be at least 12 characters.");
+    if (adminPassword.length < 12)
+      throw new Error("ADMIN_PASSWORD must be at least 12 characters.");
     if (!(await db.user.findUnique({ where: { email: adminEmail } }))) {
-      const passwordHash = await hash(adminPassword, { memoryCost: 19456, timeCost: 2, parallelism: 1 });
-      const user = await db.user.create({ data: { email: adminEmail, passwordHash } });
-      await db.auditLog.create({ data: { userId: user.id, action: "admin.seeded" } });
-      console.log(`Admin account created: ${adminEmail} (set up 2FA at first sign-in).`);
+      const passwordHash = await hash(adminPassword, {
+        memoryCost: 19456,
+        timeCost: 2,
+        parallelism: 1,
+      });
+      const user = await db.user.create({
+        data: { email: adminEmail, passwordHash },
+      });
+      await db.auditLog.create({
+        data: { userId: user.id, action: "admin.seeded" },
+      });
+      console.log(
+        `Admin account created: ${adminEmail} (set up 2FA at first sign-in).`,
+      );
     }
   }
+}
 
+async function main() {
+  // The SiteSettings row exists from the first install on. After that, deploys never add or change
+  // content: no samples come back even if you delete every product or case study.
+  const installed = await db.siteSettings.findUnique({
+    where: { id: 1 },
+    select: { id: true },
+  });
+  if (installed) console.log("Site already set up: content left untouched.");
+  else {
+    await seedContent();
+    console.log("Starting content created.");
+  }
+  await seedAdmin();
   console.log("Seed complete.");
 }
 
