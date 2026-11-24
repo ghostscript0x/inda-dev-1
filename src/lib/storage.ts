@@ -99,3 +99,30 @@ export async function deleteStored(key: string) {
   const isPrivate = k.publicId.startsWith("inda/private/");
   await cloudinary.uploader.destroy(k.publicId, { resource_type: k.resourceType, type: isPrivate ? "authenticated" : "upload", invalidate: true });
 }
+
+/**
+ * A buyer's personalised (stamped) copy, stored privately under a fixed id and reused on re-downloads.
+ * Large files are delivered through a short-lived signed URL instead of the function response, because
+ * Vercel caps function responses at 4.5 MB. Returns null without Cloudinary (local dev serves inline).
+ */
+export async function personalCopy(id: string, filename: string, make: () => Promise<Buffer>): Promise<string | null> {
+  if (!env.cloudinary) return null;
+  const safe = filename.replace(SAFE_NAME, "_").slice(-80);
+  const publicId = `inda/private/copies/${id.replace(SAFE_NAME, "_")}_${safe}`;
+  try {
+    await cloudinary.api.resource(publicId, { resource_type: "raw", type: "authenticated" });
+    return `cld:raw:${publicId}`;
+  } catch (e) {
+    const status = (e as { error?: { http_code?: number } }).error?.http_code;
+    if (status !== 404) throw e;
+  }
+  const buf = await make();
+  const res = await new Promise<UploadApiResponse>((resolve, reject) => {
+    cloudinary.uploader
+      .upload_stream({ resource_type: "raw", type: "authenticated", public_id: publicId, overwrite: true }, (err, result) =>
+        err || !result ? reject(err ?? new Error("Cloudinary upload returned nothing")) : resolve(result),
+      )
+      .end(buf);
+  });
+  return `cld:raw:${res.public_id}`;
+}

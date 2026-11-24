@@ -7,7 +7,7 @@ import { env } from "@/lib/env";
 import { geoFromHeaders, clientIp } from "@/lib/request";
 import { parseUA, recordServerEvent } from "@/lib/analytics";
 import { rateLimit } from "@/lib/ratelimit";
-import { readStored, signedUrl } from "@/lib/storage";
+import { personalCopy, readStored, signedUrl } from "@/lib/storage";
 import { alertOwner } from "@/lib/notify";
 import { MAX_DISTINCT_FINGERPRINTS } from "@/lib/store";
 
@@ -15,6 +15,11 @@ export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
 const STAMP_LIMIT_BYTES = 60 * 1024 * 1024; // larger files are delivered unmodified via signed URL
+// Originals above this are delivered as a stored personal copy + signed URL: stamping can triple a PDF's
+// size, and Vercel caps function responses at 4.5 MB.
+const INLINE_LIMIT_BYTES = 1024 * 1024;
+
+export const maxDuration = 60;
 
 const deny = (msg: string, status = 403) => new Response(msg, { status, headers: { "content-type": "text/plain; charset=utf-8", "cache-control": "no-store" } });
 
@@ -86,10 +91,18 @@ export async function GET(_req: Request, { params }: { params: Promise<{ token: 
   const isZip = /zip/.test(file.mime) || /\.zip$/i.test(file.filename);
 
   if ((isPdf || isZip) && file.bytes <= STAMP_LIMIT_BYTES) {
-    const original = await readStored(file.cloudinaryId);
-    const body = isPdf
-      ? await stampPdf(original, `Licensed to ${order.email} · Order ${order.id} · Not for redistribution`)
-      : Buffer.from(await (await JSZip.loadAsync(original)).file(`LICENSE-${order.id}.txt`, licenseText(order)).generateAsync({ type: "uint8array", compression: "DEFLATE" }));
+    const make = async () => {
+      const original = await readStored(file.cloudinaryId);
+      return isPdf
+        ? stampPdf(original, `Licensed to ${order.email} · Order ${order.id} · Not for redistribution`)
+        : Buffer.from(await (await JSZip.loadAsync(original)).file(`LICENSE-${order.id}.txt`, licenseText(order)).generateAsync({ type: "uint8array", compression: "DEFLATE" }));
+    };
+    if (file.bytes > INLINE_LIMIT_BYTES) {
+      const key = await personalCopy(`${order.id}_${file.id}`, filename, make);
+      const url = key && signedUrl(key, 300);
+      if (url) return Response.redirect(url, 302);
+    }
+    const body = await make();
     return new Response(new Uint8Array(body), {
       headers: {
         "content-type": isPdf ? "application/pdf" : "application/zip",
