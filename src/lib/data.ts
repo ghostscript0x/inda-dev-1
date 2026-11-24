@@ -106,9 +106,9 @@ export type ProjectListItem = {
   result: string;
   stack: string[];
   coverId: string | null;
+  industry: string;
 };
 export type ProjectFull = ProjectListItem & {
-  industry: string;
   content: ProjectContent;
   results: { label: string; value: string }[];
   galleryIds: string[];
@@ -122,7 +122,7 @@ export const getProjects = cached(
     db.project.findMany({
       where: { published: true },
       orderBy: { order: "asc" },
-      select: { slug: true, title: true, pillar: true, summary: true, result: true, stack: true, coverId: true },
+      select: { slug: true, title: true, pillar: true, summary: true, result: true, stack: true, coverId: true, industry: true },
     }),
   "projects",
   [TAGS.projects],
