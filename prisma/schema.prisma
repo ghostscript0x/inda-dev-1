@@ -1,67 +1,385 @@
+// inda.dev — database schema
+// Money is always stored in minor units (kobo). The store sells in NGN only.
+
 generator client {
-  provider = "prisma-client-js"
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
 }
 
 datasource db {
   provider = "postgresql"
 }
 
-model Admin {
-  id        String   @id @default(cuid())
-  email     String   @unique
-  password  String
-  name      String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+// ─────────────────────────── Store ───────────────────────────
+
+enum ProductStatus {
+  draft
+  published
+  hidden
 }
 
-model Profile {
-  id            String   @id @default(cuid())
+enum ProductCategory {
+  templates
+  workflows
+  starters
+  guides
+  scripts
+}
+
+enum Currency {
+  NGN
+}
+
+enum OrderStatus {
+  pending
+  awaiting_confirmation // free product waiting for email confirmation
+  paid
+  failed
+  refunded
+}
+
+model Product {
+  id          String          @id @default(cuid())
+  slug        String          @unique
+  title       String
+  summary     String
+  description String
+  whatsInside String[]
+  audience    String          @default("")
+  faqs        Json            @default("[]")
+  priceNGN    Int             @default(0)
+  isFree      Boolean         @default(false)
+  category    ProductCategory
+  coverId     String?
+  cover       Media?          @relation("ProductCover", fields: [coverId], references: [id], onDelete: SetNull)
+  galleryIds  String[]
+  videoUrl    String?
+  fileId      String?
+  file        Media?          @relation("ProductFile", fields: [fileId], references: [id], onDelete: SetNull)
+  featured    Boolean         @default(false)
+  status      ProductStatus   @default(draft)
+  sortOrder   Int             @default(0)
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+  orders      Order[]
+  reviews     Review[]
+  seo         SeoMeta?
+
+  @@index([status, featured])
+}
+
+model Order {
+  id              String          @id @default(cuid())
+  email           String
+  productId       String
+  product         Product         @relation(fields: [productId], references: [id], onDelete: Restrict)
+  amount          Int
+  currency        Currency
+  status          OrderStatus     @default(pending)
+  provider        String          @default("paystack")
+  providerRef     String          @unique
+  couponId        String?
+  coupon          Coupon?         @relation(fields: [couponId], references: [id], onDelete: SetNull)
+  termsAcceptedAt DateTime
+  confirmHash     String?         @unique
+  emailSentAt     DateTime?
+  paidAt          DateTime?
+  refundedAt      DateTime?
+  // attribution for revenue per source / country
+  visitorId       String?
+  source          String?
+  utmSource       String?
+  country         String?
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+  tokens          DownloadToken[]
+  downloads       DownloadLog[]
+  review          Review?
+
+  @@index([email])
+  @@index([status, createdAt])
+  @@index([productId, status])
+}
+
+model DownloadToken {
+  id            String    @id @default(cuid())
+  orderId       String
+  order         Order     @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  tokenHash     String    @unique
+  expiresAt     DateTime
+  downloadsLeft Int       @default(5)
+  lockedAt      DateTime?
+  createdAt     DateTime  @default(now())
+}
+
+model DownloadLog {
+  id      String   @id @default(cuid())
+  orderId String
+  order   Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  ts      DateTime @default(now())
+  country String?
+  device  String?
+  ua      String?
+
+  @@index([orderId])
+}
+
+model Review {
+  id        String   @id @default(cuid())
+  productId String
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  orderId   String   @unique
+  order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  name      String
+  rating    Int
+  comment   String
+  approved  Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([productId, approved])
+}
+
+model Coupon {
+  id         String    @id @default(cuid())
+  code       String    @unique
+  percentOff Int
+  maxUses    Int?
+  uses       Int       @default(0)
+  expiresAt  DateTime?
+  active     Boolean   @default(true)
+  createdAt  DateTime  @default(now())
+  orders     Order[]
+}
+
+model WebhookEvent {
+  id        String   @id // provider event key, makes processing idempotent
+  provider  String
+  createdAt DateTime @default(now())
+}
+
+// ─────────────────────────── Site content ───────────────────────────
+
+model SiteSettings {
+  id            Int      @id @default(1)
   name          String
   tagline       String
-  kicker        String
-  intro         String
-  bio           String[]
-  stack         String
-  manifesto     String
-  contactHeadline String
-  contactIntro  String
-  profileImage  String?
-  logoImage     String?
-  createdAt     DateTime @default(now())
+  bio           String
+  email         String
+  whatsapp      String
+  bookingUrl    String
+  availability  Boolean  @default(true)
+  availabilityText String @default("Available for new projects")
+  socials       Json     @default("[]")
+  logoIds       String[]
+  cvFileId      String?
   updatedAt     DateTime @updatedAt
 }
 
-model Service {
+model Section {
   id        String   @id @default(cuid())
-  number    String
-  title     String
-  text      String
-  order     Int      @default(0)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
-model Experience {
-  id        String   @id @default(cuid())
-  period    String
-  title     String
-  text      String
-  order     Int      @default(0)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
-model Work {
-  id        String   @id @default(cuid())
+  page      String // home | about
   type      String
-  title     String
-  text      String
-  tags      String[]
-  accent    String
-  image     String?
-  link      String?
-  order     Int      @default(0)
-  createdAt DateTime @default(now())
+  order     Int
+  visible   Boolean  @default(true)
+  data      Json // published, Zod-validated per type
+  draftData Json? // unpublished edits; shown only in draft mode
   updatedAt DateTime @updatedAt
+
+  @@index([page, order])
+}
+
+model SeoMeta {
+  id          String   @id @default(cuid())
+  path        String?  @unique
+  productId   String?  @unique
+  product     Product? @relation(fields: [productId], references: [id], onDelete: Cascade)
+  title       String?
+  description String?
+  ogImageId   String?
+  updatedAt   DateTime @updatedAt
+}
+
+model Media {
+  id            String    @id @default(cuid())
+  cloudinaryId  String    @unique // storage key (Cloudinary public_id or local key)
+  url           String // public URL, empty for private files
+  filename      String
+  mime          String
+  bytes         Int
+  width         Int?
+  height        Int?
+  alt           String    @default("")
+  private       Boolean   @default(false)
+  createdAt     DateTime  @default(now())
+  productCovers Product[] @relation("ProductCover")
+  productFiles  Product[] @relation("ProductFile")
+}
+
+model LegalDoc {
+  slug      String   @id // privacy | terms | refunds | license
+  title     String
+  body      String
+  updatedAt DateTime @updatedAt
+}
+
+// ─────────────────────────── Portfolio ───────────────────────────
+
+model Project {
+  id         String   @id @default(cuid())
+  slug       String   @unique
+  title      String
+  pillar     String // build | secure | automate
+  industry   String   @default("")
+  summary    String
+  result     String // one-line result shown in the list
+  content    Json // { problem, approach, architecture, code, results }
+  stack      String[]
+  coverId    String?
+  galleryIds String[]
+  results    Json     @default("[]") // [{ label, value }]
+  liveUrl    String?
+  repoUrl    String?
+  order      Int      @default(0)
+  published  Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model Certification {
+  id        String   @id @default(cuid())
+  name      String
+  issuer    String
+  status    String // done | in_progress | planned
+  progress  Int      @default(0)
+  date      String   @default("")
+  url       String?
+  order     Int      @default(0)
+}
+
+model Testimonial {
+  id      String  @id @default(cuid())
+  quote   String
+  name    String
+  role    String
+  visible Boolean @default(false)
+  order   Int     @default(0)
+}
+
+// ─────────────────────────── Inbox ───────────────────────────
+
+model Message {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  service   String
+  budget    String
+  body      String
+  status    String   @default("new") // new | replied | archived
+  source    String?
+  createdAt DateTime @default(now())
+
+  @@index([status, createdAt])
+}
+
+// ─────────────────────────── Admin ───────────────────────────
+
+model User {
+  id             String    @id @default(cuid())
+  email          String    @unique
+  passwordHash   String
+  totpSecret     String?
+  totpEnabled    Boolean   @default(false)
+  backupCodes    String[] // argon2 hashes
+  failedLogins   Int       @default(0)
+  lockedUntil    DateTime?
+  // One-time email sign-in code (sha256 of the 6 digits), as an alternative to the password.
+  loginCodeHash     String?
+  loginCodeExpires  DateTime?
+  loginCodeAttempts Int       @default(0)
+  isDemo         Boolean   @default(false)
+  createdAt      DateTime  @default(now())
+  sessions       Session[]
+  auditLogs      AuditLog[]
+}
+
+model Session {
+  id         String   @id @default(cuid())
+  tokenHash  String   @unique
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  verified   Boolean  @default(false) // false until the 2FA step is done
+  ip         String?
+  country    String?
+  ua         String?
+  expiresAt  DateTime
+  lastSeenAt DateTime @default(now())
+  createdAt  DateTime @default(now())
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  action    String
+  target    String?
+  meta      Json?
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
+}
+
+model Revision {
+  id        String   @id @default(cuid())
+  entity    String // section | project | product | legal | settings
+  entityId  String
+  data      Json
+  userId    String?
+  createdAt DateTime @default(now())
+
+  @@index([entity, entityId, createdAt])
+}
+
+// ─────────────────────────── Analytics ───────────────────────────
+
+model Event {
+  id          String   @id @default(cuid())
+  ts          DateTime @default(now())
+  type        String // pageview | click | scroll | vitals | search | 404 | store events…
+  path        String
+  visitorId   String
+  sessionId   String
+  isNew       Boolean  @default(false)
+  referrer    String?
+  source      String? // classified: direct | search | social | referral | campaign
+  utmSource   String?
+  utmMedium   String?
+  utmCampaign String?
+  country     String?
+  region      String?
+  city        String?
+  device      String?
+  browser     String?
+  os          String?
+  screen      String?
+  lang        String?
+  timezone    String?
+  theme       String?
+  props       Json?
+  value       Float?
+
+  @@index([ts])
+  @@index([type, ts])
+  @@index([path, ts])
+  @@index([sessionId])
+}
+
+model DailyStat {
+  date      DateTime @db.Date
+  metric    String
+  dimension String
+  key       String
+  count     Int
+  sum       Float    @default(0)
+
+  @@id([date, metric, dimension, key])
 }
