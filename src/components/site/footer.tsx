@@ -6,7 +6,7 @@ import type { SiteSettings } from "@/lib/data";
 const COLUMNS = [
   { title: "Site", links: [["Work", "/#work"], ["Products", "/products"], ["About", "/about"], ["Contact", "/contact"]] },
   { title: "Store", links: [["Find my downloads", "/downloads"], ["Refunds", "/refunds"], ["License", "/license"]] },
-  { title: "Legal", links: [["Privacy", "/privacy"], ["Terms", "/terms"], ["security.txt", "/.well-known/security.txt"]] },
+  { title: "Legal", links: [["Privacy", "/privacy"], ["Terms", "/terms"]] },
 ] as const;
 
 export function Footer({ settings }: { settings: SiteSettings }) {
