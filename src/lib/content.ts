@@ -238,7 +238,9 @@ export const NETWORK_INFO: Record<Social["network"], { label: string; placeholde
  */
 export function resolveSocials(socials: Social[], contact: { email: string; whatsapp: string }): Social[] {
   const digits = contact.whatsapp.replace(/\D/g, "");
-  return socials.flatMap((s) => {
+  // A WhatsApp number in the contact details is enough: add the link even if it isn't in the list.
+  const list = digits.length >= 8 && !socials.some((s) => s.network === "whatsapp") ? [...socials, { network: "whatsapp" as const, label: "WhatsApp", href: "" }] : socials;
+  return list.flatMap((s) => {
     const label = s.label.trim() || NETWORK_INFO[s.network].label;
     if (s.network === "email") return contact.email ? [{ ...s, label, href: `mailto:${contact.email}` }] : [];
     if (s.network === "whatsapp") return digits.length >= 8 ? [{ ...s, label, href: `https://wa.me/${digits}` }] : [];

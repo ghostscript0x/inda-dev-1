@@ -7,7 +7,7 @@ import { z } from "zod";
 
 /**
  * Public read layer. Everything is cached with tags and refreshed on publish
- * via revalidateTag(tag, "max"). Draft mode bypasses the cache and reads drafts.
+ * via updateTag(tag) from admin saves. Draft mode bypasses the cache and reads drafts.
  * Results go through JSON, so dates are returned as ISO strings.
  */
 export const TAGS = {

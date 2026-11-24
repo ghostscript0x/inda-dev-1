@@ -262,7 +262,8 @@ export function ContactCta({
   data: SectionData<"contact">;
   settings: SiteSettings;
 }) {
-  const wa = `https://wa.me/${settings.whatsapp.replace(/\D/g, "")}`;
+  const digits = settings.whatsapp.replace(/\D/g, "");
+  const wa = digits.length >= 8 ? `https://wa.me/${digits}` : null;
   return (
     <section className="container-page py-20 md:py-28">
       <div className="relative overflow-hidden rounded-2xl border border-border bg-surface px-6 py-14 md:px-14 md:py-20">
@@ -291,15 +292,17 @@ export function ContactCta({
           >
             <Mail aria-hidden /> Email
           </a>
-          <a
-            href={wa}
-            target="_blank"
-            rel="noopener noreferrer"
-            className={buttonClass({ variant: "outline", size: "lg" })}
-            data-track="cta_whatsapp"
-          >
-            <MessageCircle aria-hidden /> WhatsApp
-          </a>
+          {wa && (
+            <a
+              href={wa}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={buttonClass({ variant: "outline", size: "lg" })}
+              data-track="cta_whatsapp"
+            >
+              <MessageCircle aria-hidden /> WhatsApp
+            </a>
+          )}
           {settings.bookingUrl && (
             <a
               href={settings.bookingUrl}

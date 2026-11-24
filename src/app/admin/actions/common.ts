@@ -1,5 +1,5 @@
 import "server-only";
-import { revalidateTag } from "next/cache";
+import { updateTag } from "next/cache";
 import { audit, requireWriter } from "@/lib/auth";
 import { db } from "@/lib/db";
 
@@ -31,7 +31,11 @@ export async function saveRevision(entity: string, entityId: string, data: unkno
   if (old.length) await db.revision.deleteMany({ where: { id: { in: old.map((o) => o.id) } } });
 }
 
-/** Refresh only the public pages that depend on these tags (within seconds, stale-while-revalidate). */
+/**
+ * Expire the public data behind these tags immediately, so the very next visit shows the change.
+ * (revalidateTag(…, "max") would serve the old page once more while refreshing in the background.)
+ * Only callable from Server Actions, which is where every admin save runs.
+ */
 export function publish(...tags: string[]) {
-  for (const t of tags) revalidateTag(t, "max");
+  for (const t of tags) updateTag(t);
 }

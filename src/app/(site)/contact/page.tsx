@@ -16,10 +16,10 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function ContactPage() {
   const settings = await getSettings();
-  const wa = `https://wa.me/${settings.whatsapp.replace(/\D/g, "")}`;
+  const digits = settings.whatsapp.replace(/\D/g, "");
   const channels = [
     settings.bookingUrl && { icon: Calendar, label: "Book a 30-minute call", value: "Pick a time that suits you", href: settings.bookingUrl, track: "contact_booking", external: true },
-    { icon: MessageCircle, label: "WhatsApp", value: settings.whatsapp, href: wa, track: "contact_whatsapp", external: true },
+    digits.length >= 8 && { icon: MessageCircle, label: "WhatsApp", value: settings.whatsapp, href: `https://wa.me/${digits}`, track: "contact_whatsapp", external: true },
     { icon: Mail, label: "Email", value: settings.email, href: `mailto:${settings.email}`, track: "contact_email", external: false },
   ].filter(Boolean) as { icon: typeof Mail; label: string; value: string; href: string; track: string; external: boolean }[];
 
