@@ -6,7 +6,7 @@ import { Badge, Tag } from "@/components/ui/misc";
 import { buttonClass } from "@/components/ui/button";
 import { Reveal } from "@/components/ui/reveal";
 import { getCertifications, getMedia, getSections, getSeo, getSettings, type SectionBlock } from "@/lib/data";
-import { breadcrumbs, jsonLd, pageMeta, PERSON } from "@/lib/seo";
+import { breadcrumbs, jsonLd, NAME_PARTS, NAME_VARIANTS, pageMeta, PERSON } from "@/lib/seo";
 import { PILLARS } from "@/lib/content";
 import { env } from "@/lib/env";
 
@@ -151,7 +151,8 @@ export default async function AboutPage() {
     "@context": "https://schema.org",
     "@type": "Person",
     name: PERSON,
-    alternateName: ["Abdul Quddus Inda", "Inda"],
+    alternateName: NAME_VARIANTS,
+    ...NAME_PARTS,
     url: env.siteUrl,
     jobTitle: "Software Engineer",
     image: photoId && media[photoId] ? media[photoId].url : undefined,

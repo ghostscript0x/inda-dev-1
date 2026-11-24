@@ -50,7 +50,7 @@ const about: { type: SectionType; visible?: boolean; data: unknown }[] = [
     data: {
       title: "I build software that’s secure by default and automated where it counts.",
       paragraphs: [
-        "[Sample] I’m Abdul-Quddus Inda, a software engineer based in Nigeria. I build web applications and backends, automate the repetitive parts of running a business, and set up networks and servers that stay up.",
+        "I’m Abdul-Quddus Sanusy Onuja Inda (most people just call me Inda), a software engineer based in Nigeria. I build web applications and backends, automate the repetitive parts of running a business, and set up networks and servers that stay up.",
         "[Sample] Replace these paragraphs with your own story in the admin: where you started, what you work on now, and what kind of projects you want more of.",
       ],
       photoId: null,
@@ -76,7 +76,7 @@ const about: { type: SectionType; visible?: boolean; data: unknown }[] = [
 const LEGAL = {
   privacy: {
     title: "Privacy policy",
-    body: `This policy explains what personal data inda.dev (inda.name.ng), run by Abdul-Quddus Inda in Nigeria, collects, why, and your rights under the Nigeria Data Protection Act 2023.
+    body: `This policy explains what personal data inda.dev (inda.name.ng), run by Abdul-Quddus Sanusy Onuja Inda (trading as inda.dev) in Nigeria, collects, why, and your rights under the Nigeria Data Protection Act 2023.
 
 ## What I collect
 - **Purchases:** your email, the product, amount, currency, time of purchase, the time you accepted the terms, and a download log (time, country and device type) used to protect your purchase and answer payment disputes.
@@ -97,7 +97,7 @@ You can ask to see, correct or delete your data, or object to how it’s used. E
   },
   terms: {
     title: "Terms of use",
-    body: `These terms apply to inda.name.ng and anything bought from it. The site is run by Abdul-Quddus Inda, Nigeria.
+    body: `These terms apply to inda.name.ng and anything bought from it. The site is run by Abdul-Quddus Sanusy Onuja Inda (trading as inda.dev), Nigeria.
 
 ## Purchases
 Prices are in Nigerian naira (NGN) and charged through Paystack. You receive a download link by email right after payment is confirmed. Links work for 72 hours and up to 5 downloads; you can request new links at [/downloads](/downloads).

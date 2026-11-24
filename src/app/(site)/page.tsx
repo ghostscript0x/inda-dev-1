@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Hero } from "@/components/sections/hero";
 import { ContactCta, Pillars, ProductsSection, Proof, WorkList } from "@/components/sections/home-sections";
 import { getFeaturedProducts, getMedia, getProjects, getSections, getSeo, getSettings, getTestimonials, type SectionBlock } from "@/lib/data";
-import { jsonLd, pageMeta, PERSON } from "@/lib/seo";
+import { jsonLd, NAME_PARTS, NAME_VARIANTS, pageMeta, PERSON } from "@/lib/seo";
 import { env } from "@/lib/env";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -60,7 +60,8 @@ export default async function HomePage() {
     "@context": "https://schema.org",
     "@type": "Person",
     name: PERSON,
-    alternateName: ["Abdul Quddus Inda", "Inda"],
+    alternateName: NAME_VARIANTS,
+    ...NAME_PARTS,
     url: env.siteUrl,
     jobTitle: "Software Engineer",
     description: hero?.type === "hero" ? hero.data.headline : undefined,

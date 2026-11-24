@@ -1,7 +1,14 @@
 import type { Metadata } from "next";
 import { env } from "./env";
 
+/** Everyday name: titles, hero, footer. */
 export const PERSON = "Abdul-Quddus Inda";
+/** Full name (given name, father's name, family name, native name). Used in legal text and structured data. */
+export const FULL_NAME = "Abdul-Quddus Sanusy Onuja Inda";
+/** Every form people might search for, so they all lead here. */
+export const NAME_VARIANTS = [FULL_NAME, "Abdul-Quddus Sanusy-Onuja", "Abdul-Quddus Sanusy Onuja", "Abdul Quddus Inda", "Abdul-Quddus Onuja", "Inda"];
+/** schema.org name parts for the Person entity. */
+export const NAME_PARTS = { givenName: "Abdul-Quddus", additionalName: "Sanusy Onuja", familyName: "Inda" };
 
 export function ogUrl(title: string, kicker?: string) {
   const q = new URLSearchParams({ title: title.slice(0, 90) });
