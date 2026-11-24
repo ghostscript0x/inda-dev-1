@@ -10,3 +10,7 @@ src/generated
 storage
 public/uploads
 .vercel
+
+# one-off local helper scripts
+/.*.mjs
+/.*.mts
